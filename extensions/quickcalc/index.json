@@ -1,0 +1,9 @@
+{
+    "app_id":"quickcalc",
+    "name":"Quickcalc",
+    "author":"FlipArtYT",
+    "description":"Basic sidebar calculator",
+    "version":"0.0.1",
+    "icon_path":"calculator.png",
+    "script_path":"main.py"
+}

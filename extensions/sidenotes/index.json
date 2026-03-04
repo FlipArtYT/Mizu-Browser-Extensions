@@ -1,0 +1,9 @@
+{
+    "app_id":"sidenotes",
+    "name":"Sidenotes",
+    "author":"FlipArtYT",
+    "description":"Simple note taking application",
+    "version":"0.0.1",
+    "icon_path":"notes.png",
+    "script_path":"main.py"
+}
