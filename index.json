@@ -2,8 +2,8 @@
   "store_version": "1.0",
   "extensions": [
     {
-      "app_id": "sidenote",
-      "name": "Sidenote",
+      "app_id": "sidenotes",
+      "name": "Sidenotes",
       "version": "v0.0.1",
       "author": "FlipArtYT",
       "description": "Simple note taking application that supports multiple notes, easy note management and auto-saving notes.",
