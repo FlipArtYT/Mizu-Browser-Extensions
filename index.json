@@ -4,23 +4,21 @@
     {
       "app_id": "sidenotes",
       "name": "Sidenotes",
-      "version": "v0.0.1",
       "author": "FlipArtYT",
       "description": "Simple note taking application that supports multiple notes, easy note management and auto-saving notes.",
-      "icon_url": "",
-      "download_url": "",
-      "category": "Productivity",
+      "version": "v0.0.1",
+      "icon_path": "",
+      "download_path": "",
       "dependencies": []
     },
     {
       "app_id": "quickcalc",
       "name": "Quickcalc",
-      "version": "v0.0.1",
       "author": "FlipArtYT",
       "description": "Basic sidebar calculator for quick math without leaving your browser tab.",
-      "icon_url": "",
-      "download_url": "",
-      "category": "Tools",
+      "version": "v0.0.1",
+      "icon_path": "",
+      "download_path": "",
       "dependencies": []
     }
   ]
