@@ -2,7 +2,7 @@
     "app_id":"quickcalc",
     "name":"Quickcalc",
     "author":"FlipArtYT",
-    "description":"Basic sidebar calculator",
+    "description":"Basic sidebar calculator for quick math without leaving your browser tab.",
     "version":"0.0.1",
     "icon_path":"calculator.png",
     "script_path":"main.py"

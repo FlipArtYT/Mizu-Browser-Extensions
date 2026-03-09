@@ -2,7 +2,7 @@
     "app_id":"sidenotes",
     "name":"Sidenotes",
     "author":"FlipArtYT",
-    "description":"Simple note taking application",
+    "description":"Simple note taking application that supports multiple notes, easy note management and auto-saving notes.",
     "version":"0.0.1",
     "icon_path":"notes.png",
     "script_path":"main.py"
