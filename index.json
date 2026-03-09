@@ -8,7 +8,7 @@
       "description": "Simple note taking application that supports multiple notes, easy note management and auto-saving notes.",
       "version": "v0.0.1",
       "icon_path": "",
-      "download_path": "",
+      "download_path": "https://github.com/FlipArtYT/Mizu-Browser-Extensions/raw/refs/heads/main/dist/sidenotes.zip",
       "dependencies": []
     },
     {
@@ -18,7 +18,7 @@
       "description": "Basic sidebar calculator for quick math without leaving your browser tab.",
       "version": "v0.0.1",
       "icon_path": "",
-      "download_path": "",
+      "download_path": "https://github.com/FlipArtYT/Mizu-Browser-Extensions/raw/refs/heads/main/dist/quickcalc.zip",
       "dependencies": []
     }
   ]
