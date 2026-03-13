@@ -1,0 +1,9 @@
+{
+    "app_id":"ollama-client",
+    "name":"Ollama API Client",
+    "author":"FlipArtYT",
+    "description":"Easily accessible Ollama API client to chat with Ollama cloud models",
+    "version":"0.0.1",
+    "icon_path":"ollama.png",
+    "script_path":"main.py"
+}
