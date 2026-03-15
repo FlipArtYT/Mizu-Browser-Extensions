@@ -1,8 +1,6 @@
 from ollama import Client
-import sys
 import os
 from PyQt6.QtWidgets import (
-    QApplication,
     QWidget,
     QTextEdit,
     QLineEdit,
@@ -124,6 +122,7 @@ class MainWidget(QWidget):
         self.user_send_btn.setIcon(qta.icon("fa6s.hourglass-half"))
 
         self.messages.append({"role":"user", "content":message})
+        self.update_messages()
 
         worker = AI_Worker(self.client, self.messages, model)
         self.messages.append({"role":"assistant", "content":""})
@@ -150,6 +149,8 @@ class MainWidget(QWidget):
       
     def update_messages(self):
         formatted_string = ""
+        v_bar = self.chat_box.verticalScrollBar()
+        v_bar_at_bottom = v_bar.value() >= v_bar.maximum() - 20
 
         for data in self.messages:
             role = data["role"]
@@ -167,12 +168,16 @@ class MainWidget(QWidget):
         
         self.chat_box.setMarkdown(formatted_string)
 
+        if v_bar_at_bottom:
+            v_bar.setValue(v_bar.maximum())
+
 
     def change_api_key(self):
         changed_api_key, ok = QInputDialog.getText(self, "API Key", "Input your Ollama API key:")
         changed_api_key = changed_api_key.strip()
         
         if changed_api_key:
+            global API_KEY
             API_KEY = changed_api_key
 
             with open(API_KEY_FILE_PATH, "w") as f:
