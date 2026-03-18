@@ -3,7 +3,7 @@
     "name":"Sidenotes",
     "author":"FlipArtYT",
     "description":"Simple note taking application that supports multiple notes, easy note management and auto-saving notes.",
-    "version":"0.0.1",
+    "version":"0.0.2",
     "icon_path":"notes.png",
     "script_path":"main.py"
 }

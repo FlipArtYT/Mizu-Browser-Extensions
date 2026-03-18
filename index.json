@@ -6,7 +6,7 @@
       "name": "Sidenotes",
       "author": "FlipArtYT",
       "description": "Simple note taking application that supports multiple notes, easy note management and auto-saving notes.",
-      "version": "v0.0.1",
+      "version": "0.0.2",
       "icon_path": "",
       "download_path": "https://github.com/FlipArtYT/Mizu-Browser-Extensions/raw/refs/heads/main/dist/sidenotes.zip",
       "dependencies": []
@@ -16,7 +16,7 @@
       "name": "Quickcalc",
       "author": "FlipArtYT",
       "description": "Basic sidebar calculator for quick math without leaving your browser tab.",
-      "version": "v0.0.1",
+      "version": "0.0.1",
       "icon_path": "",
       "download_path": "https://github.com/FlipArtYT/Mizu-Browser-Extensions/raw/refs/heads/main/dist/quickcalc.zip",
       "dependencies": []
@@ -26,7 +26,7 @@
       "name": "Ollama API Client",
       "author": "FlipArtYT",
       "description": "Easily accessible Ollama API client to chat with Ollama cloud models",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "icon_path": "",
       "download_path": "https://github.com/FlipArtYT/Mizu-Browser-Extensions/raw/refs/heads/main/dist/ollama-client.zip",
       "dependencies": []
