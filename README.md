@@ -6,8 +6,9 @@ Source code of the official [Silk Mizu Browser](https://github.com/Silk-Project/
 ![Static Badge](https://img.shields.io/badge/PyQt-6.9-41cd52?logo=Qt&labelColor=black)
 
 ## 📺 Program List
-- [x] `Sidenotes` : Simple note taking application that supports multiple notes, easy note management and auto-saving notes
-- [x] `Quickcalc` : Basic sidebar calculator
+- [x] `Sidenotes` : Simple note taking application that supports multiple notes, easy note management and auto-saving notes.
+- [x] `Quickcalc` : Basic sidebar calculator for quick math without leaving your browser tab.
+- [x] `Recursion` : Access another browser inside your browser sidebar. Useful if you want to keep a tab temporarily in place.
 - [ ] `SAPI Client` : Silk API client to chat with AI models
 - [ ] `Timers` : Create and start timers in no time
 - [ ] `Browserfetch` : Customizable fastfetch-like system information widget
