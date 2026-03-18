@@ -16,7 +16,7 @@ Source code of the official [Silk Mizu Browser](https://github.com/Silk-Project/
 - [ ] `Overcustomizable` : Customize almost every part of the browser's UI including theme, layout and additional widgets
 
 ## Current icon info
-The extension icons currently used in this repository originate from Freepik, Pixel Perfect and berkahicon.
+The extension icons currently used in this repository originate from Freepik, Pixel Perfect, berkahicon and Jagat Icon.
 
 ## 👥 Contributing
 Feel free to open issues and create pull requests.

@@ -1,0 +1,9 @@
+{
+    "app_id":"recursion",
+    "name":"Recursion",
+    "author":"FlipArtYT",
+    "description":"Access another browser inside your browser sidebar. Useful if you want to keep a tab temporarily in place.",
+    "version":"0.0.1",
+    "icon_path":"rec.png",
+    "script_path":"main.py"
+}
