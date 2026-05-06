@@ -1,5 +1,4 @@
-from PyQt6.QtWidgets import (
-    QApplication,
+from PySide6.QtWidgets import (
     QWidget,
     QTextEdit,
     QVBoxLayout,
@@ -12,10 +11,9 @@ from PyQt6.QtWidgets import (
     QMessageBox,
 )
 import os
-import sys
 import datetime
 import qtawesome as qta
-from PyQt6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 NOTES_PATH = os.path.join(SCRIPT_DIR, "notes")

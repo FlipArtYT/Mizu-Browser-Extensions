@@ -1,6 +1,6 @@
 from ollama import Client
 import os
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QWidget,
     QTextEdit,
     QLineEdit,
@@ -11,7 +11,7 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
     QInputDialog,
 )
-from PyQt6.QtCore import Qt, QRunnable, QThreadPool, pyqtSlot, pyqtSignal, QObject
+from PySide6.QtCore import Qt, QRunnable, QThreadPool, Slot, Signal, QObject
 import qtawesome as qta
 
 AVAILABLE_CLOUD_MODELS = [
@@ -32,8 +32,8 @@ if os.path.exists(API_KEY_FILE_PATH):
         API_KEY = f.read()
 
 class AI_Worker_Signals(QObject):
-    chunk_received = pyqtSignal(str)
-    response_received = pyqtSignal()
+    chunk_received = Signal(str)
+    response_received = Signal()
 
 class AI_Worker(QRunnable):
     def __init__(self, client, messages, model):
@@ -44,7 +44,7 @@ class AI_Worker(QRunnable):
         self.model = model
         self.signals = AI_Worker_Signals()
 
-    @pyqtSlot()
+    @Slot()
     def run(self):
         for part in self.client.chat(self.model, messages=self.messages, stream=True):
             self.signals.chunk_received.emit(part.message.content)

@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
@@ -8,9 +8,9 @@ from PyQt6.QtWidgets import (
 import os
 import re
 import qtawesome as qta
-from PyQt6.QtCore import QUrl
-from PyQt6.QtGui import QColor
-from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtCore import QUrl
+from PySide6.QtGui import QColor
+from PySide6.QtWebEngineWidgets import QWebEngineView
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 START_PAGE_PATH = os.path.join(SCRIPT_DIR, "assets", "index.html")
