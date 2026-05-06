@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QMessageBox,
 )
+from services.highlighter import MarkdownHighlighter
 import os
 import datetime
 import qtawesome as qta
@@ -24,7 +25,7 @@ if not os.path.exists(NOTES_PATH):
 class NoteManager():
     def __init__(self, path=NOTES_PATH):
         self.notes_path = path
-        self.allowed_filetypes = ("txt")
+        self.allowed_filetypes = ("txt", "md")
         self.notes = {}
 
         self.load_notes()
@@ -45,13 +46,13 @@ class NoteManager():
         time_now = datetime.datetime.now()
         time_formatted = time_now.strftime("%H:%M-%d-%m-%Y")
         file_name = f"New Note {time_formatted}"
-        constructed_path = os.path.join(self.notes_path, f"{file_name}.txt")
+        constructed_path = os.path.join(self.notes_path, f"{file_name}.md")
 
         # Loop if file already exists
         if os.path.exists(constructed_path):
             while os.path.exists(constructed_path):
                 file_name += " (1)"
-                constructed_path = os.path.join(self.notes_path, f"{file_name}.txt")
+                constructed_path = os.path.join(self.notes_path, f"{file_name}.md")
 
         # Create file
         with open(constructed_path, "w"):
@@ -107,6 +108,7 @@ class NoteViewer(QWidget):
         self.layout.addWidget(self.note_title)
 
         self.note_content = QTextEdit()
+        self.highlighter = MarkdownHighlighter(self.note_content.document())
         self.layout.addWidget(self.note_content)
     
     def load_data(self, abs_path, data):
