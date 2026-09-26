@@ -35,7 +35,7 @@ class PyCalc:
 
 
 class MainWidget(QWidget):
-    def __init__(self):
+    def __init__(self, controller=None):
         super().__init__()
 
         self.layout = QVBoxLayout()

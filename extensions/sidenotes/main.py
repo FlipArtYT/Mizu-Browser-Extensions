@@ -214,7 +214,7 @@ class NoteViewer(QWidget):
             os.remove(full_current_path)
 
 class MainWidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, controller=None):
         super().__init__(parent)
 
         self.file_open = False

@@ -16,7 +16,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 START_PAGE_PATH = os.path.join(SCRIPT_DIR, "assets", "index.html")
 
 class MainWidget(QWidget):
-    def __init__(self):
+    def __init__(self, controller=None):
         super().__init__()
 
         self.layout = QVBoxLayout()
@@ -67,7 +67,7 @@ class MainWidget(QWidget):
     def load_page(self):
         # Load URL if valid, else use the default search engine
         url = self.url_edit.text()
-        processed_url = QUrl.fromUserInput(url).toString()
+        processed_url = QUrl.fromuserInput(url).toString()
 
         if self.valid_url(processed_url) or self.valid_url(url):
             self.webengine.setUrl(QUrl(processed_url))

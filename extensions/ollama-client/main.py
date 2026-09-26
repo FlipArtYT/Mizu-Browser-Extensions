@@ -10,17 +10,18 @@ from PySide6.QtWidgets import (
     QComboBox,
     QSizePolicy,
     QInputDialog,
+    QScrollArea,
+    QFrame,
 )
-from PySide6.QtCore import Qt, QRunnable, QThreadPool, Slot, Signal, QObject
+from PySide6.QtCore import Qt, QRunnable, QThreadPool, Slot, Signal, QObject, QTimer
 import qtawesome as qta
 
 AVAILABLE_CLOUD_MODELS = [
-    "qwen3.5:397b-cloud",
-    "gemini-3-flash-preview:cloud",
-    "glm-4.6:cloud",
-    "kimi-k2:1t-cloud",
+    "deepseek-v4.1-flash:cloud",
+    "glm-5.3-flash:cloud",
+    "kimi-k2.6:cloud",
     "gpt-oss:120b-cloud",
-    "gemma3:27b-cloud",
+    "gemma4:cloud",
 ]
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -51,11 +52,87 @@ class AI_Worker(QRunnable):
         
         self.signals.response_received.emit()
 
+class MessageBox(QFrame):
+    def __init__(self, message: dict, color: str = "#464646", parent = None):
+        super().__init__(parent)
+
+        self.message: dict = message
+        self.color: str = color
+
+        self.init_ui()
+
+    def init_ui(self):
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout)
+
+        self.setStyleSheet(f"padding: 4px; border-radius: 16px; background-color: {self.color}")
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+
+        self.content_textedit = QTextEdit()
+        self.content_textedit.setReadOnly(True)
+        self.content_textedit.setStyleSheet("border: none;")
+        self.content_textedit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        layout.addWidget(self.content_textedit)
+
+        role = self.message.get("role", "Unknown")
+        content = self.message.get("content", "")
+        self.content_textedit.setMarkdown(f"**{role}**:\n{content}")
+
+        controls_layout = QHBoxLayout()
+        layout.addLayout(controls_layout)
+
+        controls_layout.addStretch()
+
+        self.copy_btn = QPushButton()
+        self.copy_btn.setStyleSheet("background-color: none; border: none")
+        self.copy_btn.setIcon(qta.icon("fa6s.copy"))
+        self.copy_btn.setToolTip("Copy message")
+        self.copy_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.copy_btn.clicked.connect(self._copy_message)
+        controls_layout.addWidget(self.copy_btn)
+
+        self.copy_timer = QTimer()
+        self.copy_timer.setInterval(500)
+        self.copy_timer.timeout.connect(self._reset_icon)
+
+        self.content_textedit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+        self.content_textedit.document().contentsChanged.connect(self.adjust_height)
+
+    def adjust_height(self):
+        doc = self.content_textedit.document()
+        doc.setTextWidth(self.content_textedit.viewport().width())
+        height = doc.size().height()
+        self.content_textedit.setFixedHeight(int(height) + 8)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.adjust_height()
+
+    def update_color(self, color: str):
+        self.color = color
+        self.setStyleSheet(f"padding: 4px; border-radius: 16px; background-color: {self.color}")
+
+    def update_content(self, content: str):
+        self.message["content"] = content
+        self.content_textedit.setMarkdown(f"**{self.message.get('role', 'Unknown')}**:\n{content}")
+
+    def _copy_message(self):
+        pyperclip.copy(self.message.get("content", ""))
+        self.copy_btn.setIcon(qta.icon("fa6s.check"))
+        self.copy_timer.start()
+
+    def _reset_icon(self):
+        self.copy_btn.setIcon(qta.icon("fa6s.copy"))
+        self.copy_timer.stop()
+
 class MainWidget(QWidget):
-    def __init__(self):
+    def __init__(self, controller=None):
         super().__init__()
 
         self.messages = [{"role":"system", "content":"Welcome to the Ollama API Client!"}]
+        self.accent_color = "#4643d8"
+        self.setFixedSize(640, 480)
 
         self.layout = QVBoxLayout()
         self.top_layout = QHBoxLayout()
@@ -68,7 +145,7 @@ class MainWidget(QWidget):
         self.setLayout(self.layout)
 
         self.init_ui()
-        self.update_messages()
+        self.update_output()
         self.check_key()
       
     def init_ui(self):
@@ -88,9 +165,16 @@ class MainWidget(QWidget):
         self.clear_btn.clicked.connect(self.reset_chat)
         self.top_layout.addWidget(self.clear_btn)
 
-        self.chat_box = QTextEdit()
-        self.chat_box.setReadOnly(True)
-        self.main_layout.addWidget(self.chat_box)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+
+        self.message_container = QWidget()
+        self.message_container_layout = QVBoxLayout(self.message_container)
+        self.message_container_layout.setContentsMargins(10, 10, 10, 10)
+        self.message_container_layout.setSpacing(4)
+
+        scroll.setWidget(self.message_container)
+        self.main_layout.addWidget(scroll)
 
         self.user_msg_box = QLineEdit()
         self.user_msg_box.setStyleSheet("padding: 8px")
@@ -122,7 +206,7 @@ class MainWidget(QWidget):
         self.user_send_btn.setIcon(qta.icon("fa6s.hourglass-half"))
 
         self.messages.append({"role":"user", "content":message})
-        self.update_messages()
+        self.update_output()
 
         worker = AI_Worker(self.client, self.messages, model)
         self.messages.append({"role":"assistant", "content":""})
@@ -140,37 +224,68 @@ class MainWidget(QWidget):
 
     def update_ai_response(self, chunk):
         self.messages[-1]["content"] += chunk
-        self.update_messages()
+        self.update_output()
     
     def reset_chat(self):
         self.messages = []
-        self.update_messages()
+        self.update_output()
         self.ai_selector.setEnabled(True)
       
-    def update_messages(self):
-        formatted_string = ""
-        v_bar = self.chat_box.verticalScrollBar()
-        v_bar_at_bottom = v_bar.value() >= v_bar.maximum() - 20
-
-        for data in self.messages:
-            role = data["role"]
-            message = data["content"]
-
-            if role == "assistant":
-                model = self.ai_selector.currentText()
-                formatted_string += f"\n**{model}**: {message}\n"
-            
-            elif role == "user":
-                formatted_string += f"\n**User**: {message}\n"
-            
-            else:
-                formatted_string += f"\n{message}\n"
+    def clear_output(self) -> None:
+        self.messages = []
+        self.update_output()
+    
+    def update_output(self) -> None:
+        layout = self.message_container_layout
+        while layout.count():
+            item = layout.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
         
-        self.chat_box.setMarkdown(formatted_string)
+        for message in self.messages:
+            print(message)
+            self.add_message_box(message)
+        
+        self.message_container_layout.addStretch()
 
-        if v_bar_at_bottom:
-            v_bar.setValue(v_bar.maximum())
+    def add_message_box(self, message) -> MessageBox:
+        color = "#464646"
 
+        if message.get("role") == "user":
+            color = self.accent_color
+
+        message_box = MessageBox(
+            message=message,
+            color=color
+        )
+
+        last_item = self.message_container_layout.itemAt(self.message_container_layout.count() - 1)
+        if last_item is not None and last_item.spacerItem() is not None:
+            self.message_container_layout.insertWidget(self.message_container_layout.count() - 1, message_box)
+        else:
+            self.message_container_layout.addWidget(message_box)
+
+        return message_box
+
+    def get_last_message_box(self):
+        layout = self.message_container_layout
+        for i in range(layout.count() - 1, -1, -1):
+            widget = layout.itemAt(i).widget()
+            if isinstance(widget, MessageBox):
+                return widget
+        return None
+    
+    def handle_chunk(self, chunk) -> None:
+        if self.messages and self.messages[-1]['role'] == "assistant":
+            self.messages[-1]['content'] += chunk
+            message_box = self.get_last_message_box()
+            if message_box is not None:
+                message_box.update_content(self.messages[-1]['content'])
+                return
+        else:
+            self.messages.append({"role": "assistant", "content": chunk})
+
+        self.update_output()
 
     def change_api_key(self):
         changed_api_key, ok = QInputDialog.getText(self, "API Key", "Input your Ollama API key:")

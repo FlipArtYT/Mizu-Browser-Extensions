@@ -29,7 +29,7 @@
       "version": "0.0.2",
       "icon_path": "",
       "download_path": "https://github.com/FlipArtYT/Mizu-Browser-Extensions/raw/refs/heads/main/dist/ollama-client.zip",
-      "dependencies": []
+      "dependencies": ["pyperclip"]
     },
     {
       "app_id":"recursion",
