@@ -13,15 +13,15 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QFrame,
 )
+import pyperclip
 from PySide6.QtCore import Qt, QRunnable, QThreadPool, Slot, Signal, QObject, QTimer
 import qtawesome as qta
 
 AVAILABLE_CLOUD_MODELS = [
-    "deepseek-v4.1-flash:cloud",
-    "glm-5.3-flash:cloud",
-    "kimi-k2.6:cloud",
-    "gpt-oss:120b-cloud",
     "gemma4:cloud",
+    "gpt-oss:120b-cloud",
+    "nemotron-3-nano:30b-cloud",
+    "nemotron-3-super:cloud",
 ]
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -127,12 +127,14 @@ class MessageBox(QFrame):
         self.copy_timer.stop()
 
 class MainWidget(QWidget):
+    STICK_TO_BOTTOM_THRESHOLD = 24
+
     def __init__(self, controller=None):
         super().__init__()
 
         self.messages = [{"role":"system", "content":"Welcome to the Ollama API Client!"}]
         self.accent_color = "#4643d8"
-        self.setFixedSize(640, 480)
+        self.stick_to_bottom = True
 
         self.layout = QVBoxLayout()
         self.top_layout = QHBoxLayout()
@@ -165,16 +167,20 @@ class MainWidget(QWidget):
         self.clear_btn.clicked.connect(self.reset_chat)
         self.top_layout.addWidget(self.clear_btn)
 
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
 
         self.message_container = QWidget()
         self.message_container_layout = QVBoxLayout(self.message_container)
         self.message_container_layout.setContentsMargins(10, 10, 10, 10)
         self.message_container_layout.setSpacing(4)
 
-        scroll.setWidget(self.message_container)
-        self.main_layout.addWidget(scroll)
+        self.scroll_area.setWidget(self.message_container)
+        self.main_layout.addWidget(self.scroll_area)
+
+        scroll_bar = self.scroll_area.verticalScrollBar()
+        scroll_bar.valueChanged.connect(self.on_scroll_value_changed)
+        scroll_bar.rangeChanged.connect(self.on_scroll_range_changed)
 
         self.user_msg_box = QLineEdit()
         self.user_msg_box.setStyleSheet("padding: 8px")
@@ -223,16 +229,17 @@ class MainWidget(QWidget):
         self.user_send_btn.setIcon(qta.icon("mdi.send"))
 
     def update_ai_response(self, chunk):
-        self.messages[-1]["content"] += chunk
-        self.update_output()
+        self.handle_chunk(chunk=chunk)
     
     def reset_chat(self):
         self.messages = []
+        self.stick_to_bottom = True
         self.update_output()
         self.ai_selector.setEnabled(True)
-      
+       
     def clear_output(self) -> None:
         self.messages = []
+        self.stick_to_bottom = True
         self.update_output()
     
     def update_output(self) -> None:
@@ -243,7 +250,6 @@ class MainWidget(QWidget):
                 item.widget().deleteLater()
         
         for message in self.messages:
-            print(message)
             self.add_message_box(message)
         
         self.message_container_layout.addStretch()
@@ -277,15 +283,43 @@ class MainWidget(QWidget):
     
     def handle_chunk(self, chunk) -> None:
         if self.messages and self.messages[-1]['role'] == "assistant":
+            self.stick_to_bottom = self.is_scrolled_to_bottom()
+
             self.messages[-1]['content'] += chunk
             message_box = self.get_last_message_box()
+
             if message_box is not None:
                 message_box.update_content(self.messages[-1]['content'])
+                self.auto_scroll()
                 return
         else:
             self.messages.append({"role": "assistant", "content": chunk})
 
         self.update_output()
+        self.auto_scroll()
+
+    def is_scrolled_to_bottom(self) -> bool:
+        scroll_bar = self.scroll_area.verticalScrollBar()
+        return scroll_bar.value() >= scroll_bar.maximum() - self.STICK_TO_BOTTOM_THRESHOLD
+
+    def scroll_to_bottom(self) -> None:
+        scroll_bar = self.scroll_area.verticalScrollBar()
+        scroll_bar.setValue(scroll_bar.maximum())
+
+    def auto_scroll(self) -> None:
+        if not self.stick_to_bottom:
+            return
+
+        self.scroll_to_bottom()
+        QTimer.singleShot(0, self.scroll_to_bottom)
+
+    def on_scroll_value_changed(self, value: int) -> None:
+        scroll_bar = self.scroll_area.verticalScrollBar()
+        self.stick_to_bottom = value >= scroll_bar.maximum() - self.STICK_TO_BOTTOM_THRESHOLD
+
+    def on_scroll_range_changed(self, minimum: int, maximum: int) -> None:
+        if self.stick_to_bottom:
+            self.scroll_area.verticalScrollBar().setValue(maximum)
 
     def change_api_key(self):
         changed_api_key, ok = QInputDialog.getText(self, "API Key", "Input your Ollama API key:")
